@@ -44,18 +44,16 @@ yargs.command({ // membuat command
     },
     handler(argv) {
         // cek apakah user memasukkan email atau tidak
-        let isEmailValid = Validator.isEmail(argv.email);
         if (argv.email) {
-            if (!isEmailValid) { // kondisi jika validasi false
+            if (!Validator.isEmail(argv.email)) { // kondisi jika validasi false
                 argv.email = null // set null ke inputan email yang salah
                 console.log("Format email salah (contoh: example@domain.com)");
                 // memberikan informasi kepada user bahwa email salah dan informasi email yang benar
             }
         }
         // cek apakah user memasukkan nomor hp atau tidak
-        let isMobilePhoneValid = Validator.isMobilePhone(argv.mobile, 'id-ID');
         if (argv.mobile) {
-            if (!isMobilePhoneValid) { // jika validasi nombor handphone false
+            if (!Validator.isMobilePhone(argv.mobile, 'id-ID')) { // jika validasi nombor handphone false
                 argv.mobile = null // set null ke inputan mobile number yang salah
                 console.log("Format nomor telpon salah (contoh: 08212345678)");
                 // memberikan informasi kepada user bahwa nomor hp salah dan informasi nomor hp yang benar
@@ -77,9 +75,7 @@ yargs.command({ // membuat command
         // jika nomor hp dan nama tidak null
         // ini digunakan karna mobile yang salah akan diset null kembali
         // jika tidak menggunakan kondisi ini, pada file json akan muncul mobile: null
-        if (isMobilePhoneValid && argv.name) {
-            user.push(contact); // masukan ke array json
-        }
+        user.push(contact);
 
         // kemudian data tersebut ke contacts.json
         fs.writeFileSync('./data/contacts.json', JSON.stringify(user));
