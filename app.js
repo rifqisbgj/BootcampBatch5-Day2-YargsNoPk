@@ -1,23 +1,6 @@
-// import modul external (yargs dan Validator) dan internal (fs atau filesystem)
+// import modul external (yargs) dan local (contacts)
 const yargs = require('yargs');
-const fs = require('fs');
-const Validator = require('validator');
-
-// check apakah ada folder data atau tidak
-const folder = './data'
-if (!fs.existsSync(folder)) {
-    fs.mkdirSync(folder); // membuat folder sesuai dengan nilai folder
-}
-// end check folder
-
-// check apakah ada file contacts.json dalam folder data
-const filejson = './data/contacts.json'
-if (!fs.existsSync(filejson)) {
-    fs.writeFileSync(filejson, '[]', 'utf-8');
-    // membuat file dengan lokasi sesuai var filejson dengan value []
-    // value tersebut untuk menunjukkan bahwa file json tersebut berisi object yg tersimpan dalam array
-}
-// end check file
+const contacts = require('./handlerContact');
 
 // cara menggunakan yargs: node namafile add --var="value"
 // bikin flag dengan nama variabel 'name' dengan value 'ripki'
@@ -43,42 +26,7 @@ yargs.command({ // membuat command
         },
     },
     handler(argv) {
-        // cek apakah user memasukkan email atau tidak
-        if (argv.email) {
-            if (!Validator.isEmail(argv.email)) { // kondisi jika validasi false
-                argv.email = null // set null ke inputan email yang salah
-                console.log("Format email salah (contoh: example@domain.com)");
-                // memberikan informasi kepada user bahwa email salah dan informasi email yang benar
-            }
-        }
-        // cek apakah user memasukkan nomor hp atau tidak
-        if (argv.mobile) {
-            if (!Validator.isMobilePhone(argv.mobile, 'id-ID')) { // jika validasi nombor handphone false
-                argv.mobile = null // set null ke inputan mobile number yang salah
-                console.log("Format nomor telpon salah (contoh: 08212345678)");
-                // memberikan informasi kepada user bahwa nomor hp salah dan informasi nomor hp yang benar
-            }
-        }
-
-        // variable contact berisi seluruh inputan yang diinput user dengan format JSON
-        const contact = {
-            name: argv.name,
-            email: argv.email,
-            mobile: argv.mobile
-        }
-
-        // membaca file contacts.json
-        const rawData = fs.readFileSync('./data/contacts.json', 'utf-8');
-        // membaca isi array dan merubah dalam bentuk array json
-        const user = JSON.parse(rawData);
-
-        // jika nomor hp dan nama tidak null
-        // ini digunakan karna mobile yang salah akan diset null kembali
-        // jika tidak menggunakan kondisi ini, pada file json akan muncul mobile: null
-        user.push(contact);
-
-        // kemudian data tersebut ke contacts.json
-        fs.writeFileSync('./data/contacts.json', JSON.stringify(user));
+        contacts.saveContact(argv.name, argv.email, argv.mobile);
     }
 });
 yargs.parse();
